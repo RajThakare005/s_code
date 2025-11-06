@@ -1,0 +1,52 @@
+OPTIMAL PAGE REPLACEMENT
+
+import java.util.*;
+
+public class Optimal {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Enter number of frames: ");
+        int frames = sc.nextInt();
+
+        System.out.print("Enter number of pages: ");
+        int n = sc.nextInt();
+
+        int pages[] = new int[n];
+        System.out.print("Enter page reference string: ");
+        for (int i = 0; i < n; i++)
+            pages[i] = sc.nextInt();
+
+        ArrayList<Integer> frame = new ArrayList<>(frames);
+        int pageFaults = 0;
+
+        for (int i = 0; i < n; i++) {
+            int page = pages[i];
+            if (!frame.contains(page)) {
+                if (frame.size() == frames) {
+                    int farthest = -1;
+                    int indexToReplace = -1;
+
+                    for (int j = 0; j < frame.size(); j++) {
+                        int nextUse = Integer.MAX_VALUE;
+                        for (int k = i + 1; k < n; k++) {
+                            if (frame.get(j) == pages[k]) {
+                                nextUse = k;
+                                break;
+                            }
+                        }
+                        if (nextUse > farthest) {
+                            farthest = nextUse;
+                            indexToReplace = j;
+                        }
+                    }
+                    frame.set(indexToReplace, page);
+                } else {
+                    frame.add(page);
+                }
+                pageFaults++;
+            }
+            System.out.println("Frames: " + frame);
+        }
+        System.out.println("\nTotal Page Faults = " + pageFaults);
+    }
+}

@@ -1,0 +1,136 @@
+MACRO PASS 1
+
+JAVA CODE :
+import java.util.*;
+import java.io.*;
+public class macro
+{
+public static void main(String args[])
+{
+BufferedReader br;
+OutputStream oo;
+String input = null;
+String tt = null;
+String arg = null;
+String macroTokens = null;
+String mnt[] = new String[20];
+String mdt[] = new String[20];
+String ala[] = new String[20];
+int macroIdx[] = new int[10];
+int mCount = 0,argCount=0;
+int middleCount = 0;
+int index = 1;
+int macroEnc = 0;
+try
+{
+br = new BufferedReader(new FileReader("input.txt"));
+File f3 = new File("mnt.txt");
+File f4 = new File("mdt.txt");
+File f5 = new File("adt.txt");
+PrintWriter p3 = new PrintWriter(f3);
+PrintWriter p4 = new PrintWriter(f4);
+PrintWriter p5 = new PrintWriter(f5);
+while((input=br.readLine())!=null)
+{
+StringTokenizer st = new StringTokenizer(input," ");
+tt = st.nextToken();
+if(tt.equals("MACRO"))
+{
+macroEnc = 1;
+tt = st.nextToken();
+mnt[mCount] = tt;
+macroIdx[mCount] = index;
+p3.println(mnt[mCount]+"\t"+macroIdx[mCount]);
+p4.println(mnt[mCount]);
+p5.println(mnt[mCount]);
+mCount++;
+tt=st.nextToken();
+StringTokenizer t = new StringTokenizer(tt,",");
+while(t.hasMoreTokens())
+{
+arg = t.nextToken();
+if(arg.charAt(0)=='&')
+{
+ala[argCount] = arg;
+p5.println(ala[argCount]);
+argCount++;
+}
+}
+}
+else
+{
+if(macroEnc==1)
+{
+if(input.equals("MEND"))
+{
+macroEnc=0;
+p4.println("MEND");
+}
+else
+{
+StringTokenizer t = new StringTokenizer(input," ");
+while(t.hasMoreTokens())
+{
+macroTokens = t.nextToken();
+for(int i=0;i<argCount;i++)
+{
+if(macroTokens.charAt(0)=='&' && macroTokens.equals(ala[i])) p4.println("ALA"+i);
+}
+if(macroTokens.charAt(0)=='&'){}
+else p4.print(macroTokens+" ");
+if(!t.hasMoreTokens()) p4.println();
+}
+}
+}
+}
+index++;
+}
+p3.close();
+p4.close();
+p5.close();
+}
+catch(Exception e)
+{
+e.printStackTrace();
+}
+}
+}
+Initial.txt
+MACRO INCR1 &FIRST,&SECOND
+ADD AREG &FIRST
+LDA BREG &SECOND
+MEND
+MACRO INCR2 &ARG1,&ARG2
+MOV CREG &ARG1
+SUB DREG &ARG2
+MEND
+START 100
+MOV AREG A
+MOV BREG B
+INCR1
+MOV CREG =2
+MOV DREG =3
+ADD AREG BREG
+A DC 05
+B DS 03
+END
+mnt.txt
+INCR1 1
+INCR2 5
+mdt.txt
+INCR1
+ADD AREG ALA0
+LDA BREG ALA1
+MEND
+INCR2
+MOV CREG ALA2
+SUB DREG ALA3
+MEND
+ala.txt
+INCR1
+&FIRST
+&SECOND
+INCR2
+&ARG1
+&ARG2
+
